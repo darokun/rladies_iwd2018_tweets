@@ -137,8 +137,11 @@ $(document).ready(function () {
 </div>
 
 
-<p><a href="http://rladies.org/">R-Ladies</a> is a global organization to promote diversity in the R community. One of the ways of promoting diversity is by increasing the visibility of women* in tech, especially those who are R users, or developers.</p>
-<p>The R-Ladies Global Team* set up a cool strategy to give more visibility to these women, as part of the 2018 International Women’s Day celebration. They created a twitter account (@<a href="http://www.twitter/rladies_iwd2018">rladies_iwd2018</a>) to post -tweet by tweet- each profile of R-Ladies present in the <a href="https://rladies.org/directory/">R-Ladies Global Directory</a>. For details on how they set up this initiative, check out <a href>this</a> blog post.</p>
+<p><a href="http://rladies.org/">R-Ladies</a> is a global organization to promote diversity in the R community. One of the ways of promoting diversity is by increasing the visibility of women and other underrepresented genders* in tech, especially those who are R users, or developers.</p>
+<ul>
+<li>(cis/trans women, trans men, non-binary, genderqueer, agender, or other).</li>
+</ul>
+<p>The R-Ladies Global Team set up a cool strategy to give more visibility to these women, as part of the 2018 International Women’s Day celebration. They created a twitter account (@<a href="http://www.twitter/rladies_iwd2018">rladies_iwd2018</a>) to post -tweet by tweet- each profile of R-Ladies present in the <a href="https://rladies.org/directory/">R-Ladies Global Directory</a>. For details on how they set up this initiative, check out <a href>this</a> blog post.</p>
 <p>Partially encouraged by the R-Ladies Global Team, and partially out of plain curiosity, I decided to analyze these tweets and their interactions, using <a href="https://twitter.com/kearneymw">Mike Kearney’s</a> super useful <a href="https://github.com/mkearney/rtweet">rtweet</a> package.</p>
 <div id="warnings" class="section level2">
 <h2>Warnings</h2>
@@ -421,9 +424,10 @@ tweets &lt;- arrange(tweets, desc(created_at))</code></pre>
 <ul>
 <li>The majority of tweets happened on 08.03.2018 - exactly as planned for iwd2018</li>
 <li>People tend to favorite tweets, but not necessarily to retweet (correlation ~50%)</li>
-<li>The majority of the tweets come from Uruguay🇺🇾 (but there are a lot of missing locations)</li>
+<li>The majority of the tweets (with location services on) come from Uruguay🇺🇾 (but there are a lot of missing locations)</li>
 <li><a href="https://twitter.com/_lacion_">Laura Acion</a> won the game!</li>
 </ul>
+<hr />
 <div id="p.s.-how-does-the-largest-chain-of-tweets-and-replies-look-like" class="section level4">
 <h4>P.S. How does the largest chain of tweets and replies look like?</h4>
 <p>I will try to recreate <a href="https://twitter.com/LucyStats">Lucy D’Agostino McGowan’s</a> analysis for twitter trees, using the tweet that got the highest number of replies. This tweet is by <a href="https://twitter.com/_lacion_">Laura Acion</a>:</p>

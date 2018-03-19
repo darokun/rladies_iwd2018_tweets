@@ -5,9 +5,11 @@ date: '`r format(Sys.Date(), "%B %d, %Y")`'
 output: html_document
 ---
 
-[R-Ladies](http://rladies.org/) is a global organization to promote diversity in the R community. One of the ways of promoting diversity is by increasing the visibility of women* in tech, especially those who are R users, or developers.
+[R-Ladies](http://rladies.org/) is a global organization to promote diversity in the R community. One of the ways of promoting diversity is by increasing the visibility of women and other underrepresented genders* in tech, especially those who are R users, or developers.
 
-The R-Ladies Global Team* set up a cool strategy to give more visibility to these women, as part of the 2018 International Women's Day celebration. They created a twitter account (@[rladies_iwd2018](http://www.twitter/rladies_iwd2018)) to post -tweet by tweet- each profile of R-Ladies present in the [R-Ladies Global Directory](https://rladies.org/directory/). For details on how they set up this initiative, check out [this]() blog post.
+* (cis/trans women, trans men, non-binary, genderqueer, agender, or other). 
+
+The R-Ladies Global Team set up a cool strategy to give more visibility to these women, as part of the 2018 International Women's Day celebration. They created a twitter account (@[rladies_iwd2018](http://www.twitter/rladies_iwd2018)) to post -tweet by tweet- each profile of R-Ladies present in the [R-Ladies Global Directory](https://rladies.org/directory/). For details on how they set up this initiative, check out [this]() blog post.
 
 Partially encouraged by the R-Ladies Global Team, and partially out of plain curiosity, I decided to analyze these tweets and their interactions, using [Mike Kearney's](https://twitter.com/kearneymw) super useful [rtweet](https://github.com/mkearney/rtweet) package.
 
@@ -219,9 +221,10 @@ With this analysis I've learned that:
 
 * The majority of tweets happened on 08.03.2018 - exactly as planned for iwd2018
 * People tend to favorite tweets, but not necessarily to retweet (correlation ~50%)
-* The majority of the tweets come from Uruguay`r emo::ji("Uruguay")` (but there are a lot of missing locations)
+* The majority of the tweets (with location services on) come from Uruguay`r emo::ji("Uruguay")` (but there are a lot of missing locations)
 * [Laura Acion](https://twitter.com/_lacion_) won the game!
 
+-----
 
 #### P.S. How does the largest chain of tweets and replies look like?
 I will try to recreate [Lucy D'Agostino McGowan's](https://twitter.com/LucyStats) analysis for twitter trees, using the tweet that got the highest number of replies. This tweet is by [Laura Acion](https://twitter.com/_lacion_):
