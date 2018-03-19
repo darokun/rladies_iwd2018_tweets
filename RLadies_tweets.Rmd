@@ -7,63 +7,165 @@ output: html_document
 
 [R-Ladies](http://rladies.org/) is a global organization to promote diversity in the R community. One of the ways of promoting diversity is by increasing the visibility of women* in tech, especially those who are R users, or developers.
 
-The R-Ladies Global Team* set up a cool strategy to give more visibility to these women, as part of the 2018 International Women's Day celebration. They created a twitter account (@[rladies_iwd2018](http://www.twitter/rladies_iwd2018)) to post, tweet by tweet, the profile of an R-Lady present in the [R-Ladies Global Directory](https://rladies.org/directory/). For details on how they set up this initiative, check out [this]() blog post.
+The R-Ladies Global Team* set up a cool strategy to give more visibility to these women, as part of the 2018 International Women's Day celebration. They created a twitter account (@[rladies_iwd2018](http://www.twitter/rladies_iwd2018)) to post -tweet by tweet- each profile of R-Ladies present in the [R-Ladies Global Directory](https://rladies.org/directory/). For details on how they set up this initiative, check out [this]() blog post.
 
 Partially encouraged by the R-Ladies Global Team, and partially out of plain curiosity, I decided to analyze these tweets and their interactions, using [Mike Kearney's](https://twitter.com/kearneymw) super useful [rtweet](https://github.com/mkearney/rtweet) package.
 
-# Warnings
-**WARNING 1**: The `rtweet` package interacts with Twitter's API, which has time limit of 7 days for doing it for free. If you would like to perform Twitter analyses after one week of tweets being created, you may have to [pay for this service](https://developer.twitter.com/en/pricing). The exception is when you want to fetch all tweets from the whole timeline using `get_timeline`, but depending on which account you'd wish to analyze, the amounts of tweets you receive can be overwhelming. It works for @[rladies_iwd2018](http://www.twitter/rladies_iwd2018) because the account has relatively few tweets (n = 442 at the time of this analysis).
+## Warnings
+**WARNING 1**: The `rtweet` package interacts with Twitter's API, which has time limit of 7 days for doing it for free. If you would like to perform Twitter analyses after one week of tweets being created, you may have to [pay for this service](https://developer.twitter.com/en/pricing). The exception is when you want to fetch all tweets from the whole timeline using `get_timeline`, but depending on which account you'd wish to analyze, the amount of tweets you receive can be overwhelming, so use at your own risk! It works for @[rladies_iwd2018](http://www.twitter/rladies_iwd2018) because the account has relatively few tweets (n = 442 at the time of this analysis).
 
-**WARNING 2**: The Twitter API changes frequently. Therefore, the variables I used for this analysis might change their name in the future. There should be similar variables being included in the API at any time, though. So if you want to use this code, make sure that you have up-to-date Twitter API variable names, and change anything if needed.
+**WARNING 2**: The Twitter API changes frequently. Therefore, the variable names I used for this analysis might change in the future. There should be similar variables being included in the API at any time, though. So if you want to use this code, make sure that you have up-to-date Twitter API variable names, and change anything if needed.
 
-# The game
+## The game
 Apart from the initiative itself, the R-Ladies Global Team also thought of creating a game, where anybody could reply to each tweet with the Twitter handle of the featured R-Lady. The person making the largest amount of replies wins the game!
 
-![]()
+[![R-Ladies Game](images/rladies_twitter.png)](https://twitter.com/rladies_iwd2018/status/971453057178402817)
 
-# Resources
+## Resources
 I used several resources for my analysis, including:
-* how to set up a twitter app
-* The `rtweet` book
-* Mike Kearney's blog post / slides
-* Lucy's blog post
-* Maëlle's blog post 1
-* Maëlle's blog post 2
 
-# Questions
+* [How to create a Twitter App](http://rtweet.info/articles/auth.html)
+* [The `rtweet` package](http://rtweet.info/index.html)
+* [Mike Kearney's slides about `rtweet`](https://mkearney.github.io/nicar_tworkshop/#1)
+* [Lucy's blog post: Twitter tress](http://livefreeordichotomize.com/2017/07/24/twitter-trees/)
+* [Maëlle's blog post: "Names of b.....s badder than Taylor Swift, a class in women's studies?"](http://www.masalmon.eu/2017/12/05/badderb/)
+* [Maëlle's blog post: "A glance at R-bloggers Twitter feed"](http://www.masalmon.eu/2017/02/28/rbloggerstweets/)
+
+## Questions
 I had several questions at the beginning of this analysis:
 
 * When were most of the tweets posted?
 * Which R-Lady's profile was favorited the most?
 * Which R-Lady's profile was retweeted the most?
-* Overall, how popular were the rladies_iwd2018 tweets?
-* What's the proportion of favorites, out of the total of tweets posted?
-* What's the proportion of retweets, out of the total of tweets posted?
 * Is there any correlation between favorites and retweets?
 * What's the location of the majority of tweets?
 * Who won the game?
 * How does the largest chain of tweets and replies look like?
 
-# Load packages
-```{r} 
-library("rtweet")
-library("gridExtra")
-library("dplyr")
-library("lubridate")
-library("ggplot2")
+## Load packages
+```{r message = FALSE, warning = FALSE} 
+library(rtweet)
+library(gridExtra)
+library(dplyr)
+library(lubridate)
+library(ggplot2)
+library(ggraph)
+library(igraph)
+library(ggiraph)
 ```
 
-# Get timeline and tweets
+## Get timeline and tweets
 At the time of this analysis, the @[rladies_iwd2018](http://www.twitter/rladies_iwd2018) twitter account has fewer than 500 tweets, so we can import all tweets by doing this:
 
 ```{r}
 rladies_tweets <- get_timeline("rladies_iwd2018", n = 500)
-# rladies_tweets <- arrange(rladies_tweets, created_at)
 ```
 
-However, the function `get_timeline` only accesses the tweets posted by the @[rladies_iwd2018](http://www.twitter/rladies_iwd2018) account. In order to see all tweets related to the account, including mentions, replies, etc., we need to use `search_tweets`.
+## When were most of the tweets posted?
+International Women's Day 2018 took place on March 8th, 2018. I'm assuming that most tweets came out on that day, but I do know that some were tweeted one day before and one day after (accounting for time zone differences, I guess). Also, some of the replies were still made a few days later.
 
 ```{r}
+rladies_tweets <- mutate(rladies_tweets, 
+                         wday = as.factor(wday(created_at, 
+                                               label = TRUE)))
+rladies_tweets <- mutate(rladies_tweets, 
+                         hour = as.factor(hour(created_at)))
+rladies_tweets <- mutate(rladies_tweets, 
+                         week = week(created_at))
+rladies_tweets <- mutate(rladies_tweets, 
+                         day = as.Date(created_at))
+
+weekday_dat <- rladies_tweets %>%
+  group_by(week, wday) %>%
+  summarize(n = n(), created_at = created_at[1]) 
+
+arrange(weekday_dat, created_at) %>%
+  head() %>%
+  knitr::kable()
+```
+
+Unsurprisingly, most tweets were posted on International Women's Day!
+
+## Which profile was favorited the most?
+```{r}
+rladies_tweets %>%
+  janitor::tabyl(favorite_count) %>%
+  arrange(desc(favorite_count)) %>%
+  head(10)
+```
+Wow! there are some tweets that have been favorited more than 40 times!
+
+I'll check those who have more than 30 favorites:
+```{r}
+rladies_tweets %>%
+  subset(favorite_count > 30) %>%
+  select(status_id, favorite_count, text) %>%
+  arrange(desc(favorite_count))
+```
+Okay, the first tweet (`status_id = "971152051991384065"`) doesn't count because it doesn't feature any R-Lady, but from then and on we have:
+
+```{r}
+# Adding twitter handles by hand because not all tweets contain handles.
+twitter_handles_fav <- c("@ledell", "@ma_salmon", "@minebocek", 
+                         "@JennyBryan", "@juliasilge", "@gdequeiroz", 
+                         "@AmeliaMN", "@Zofiathewitch", "@lornamariak")
+
+rladies_tweets %>%
+  subset(favorite_count > 30 & status_id != "971152051991384065") %>%
+  select(status_id, favorite_count) %>%
+  arrange(desc(favorite_count)) %>%
+  cbind(twitter_handles_fav, .)
+```
+It looks like there's a tie! [Erin LeDell](https://twitter.com/ledell) and [Maëlle Salmon](https://twitter.com/ma_salmon) each received 46 favorites!
+
+Runner ups are [Mine Cetinkaya-Rundel](https://twitter.com/minebocek), [Jenny Bryan](https://twitter.com/JennyBryan),  [Julia Silge](https://twitter.com/juliasilge), R-Ladies founder [Gabriela de Queiroz](https://twitter.com/gdequeiroz), [Amelia McNamara](https://twitter.com/AmeliaMN), [Hazel Kavili](https://twitter.com/Zofiathewitch) and [Lorna Maria Aine](https://twitter.com/lornamariak)!
+
+## Which profile was retweeted the most?
+```{r}
+rladies_tweets %>%
+  janitor::tabyl(retweet_count) %>%
+  arrange(desc(retweet_count))
+```
+
+Mmmm, it looks like most tweets were not retweeted (n = `r min(rladies_tweets$retweet_count)`), and the maximum number of retweets for a single tweet is `r max(rladies_tweets$retweet_count)`.
+
+Let's find out which tweets were retweeted more than ten times!
+```{r}
+rladies_tweets %>%
+  subset(retweet_count > 10) %>%
+  select(status_id, retweet_count, text) %>%
+  arrange(desc(retweet_count))
+```
+So, the first and second tweets don't count because they don't feature any R-Lady, but we see [Maelle's]() profile again with `r rladies_tweets$retweet_count[rladies_tweets$status_id == "971357634535284738"]` retweets!
+
+## Is there any correlation between favorites and retweets?
+I took a look at the proportion of favorites and the proportion of retweets, and they are quite dissimilar:
+```{r}
+sum(rladies_tweets$favorite_count != 0) / 
+  length(rladies_tweets$favorite_count)
+
+sum(rladies_tweets$retweet_count != 0) / 
+  length(rladies_tweets$retweet_count)
+```
+So `r round(sum(rladies_tweets$favorite_count != 0)/length(rladies_tweets$favorite_count),3) * 100`% of the @[rladies_iwd2018](http://www.twitter/rladies_iwd2018) tweets have been favorited, but only `r round(sum(rladies_tweets$retweet_count != 0)/length(rladies_tweets$retweet_count),3) * 100`% have been retweeted `r emo::ji("thinking_face")`.
+
+Let's take a look at the correlation coefficient, and how do the data look:
+```{r}
+cor(rladies_tweets$favorite_count, rladies_tweets$retweet_count, method = "spearman")
+
+ggplot(rladies_tweets) +
+  geom_point(aes(retweet_count, favorite_count))
+```
+
+There's a slight positive orientation of data points, but no specific pattern. The correlation coefficient is `r round(cor(rladies_tweets$favorite_count, rladies_tweets$retweet_count, method = "spearman"), 2)`, which means that there is a positive correlation, but it is not so strong. 
+
+What it actually means is that people who follow the @[rladies_iwd2018](http://www.twitter/rladies_iwd2018) account tend to favorite tweets way more often than they tend to retweet them. I assume it's because it is easier to just press the `r emo::ji("heart")` button, instead of hitting "retweet" and then having to retweet as it is (with no extra info - maybe confusing to their followers) or having to write some description about a tweet they just happen to like. Liking a tweet is just easier than spreading the info about it. I can't generalize these results, though, so I don't know if this really happens for all accounts.
+
+
+## What's the location of the majority of tweets?
+The function `get_timeline` that we used at the beginning only accesses tweets posted by the @[rladies_iwd2018](http://www.twitter/rladies_iwd2018) account. In order to see all tweets related to the account, including mentions, replies, etc., we need to use `search_tweets`.
+
+```{r eval = FALSE}
 # find url of first tweet
 tweet_url <- "https://twitter.com/rladies_iwd2018/status/971140001495908353"
 id <- gsub(".*status/", "", tweet_url)
@@ -78,66 +180,109 @@ tweets <- tweets %>%
 tweets <- arrange(tweets, desc(created_at))
 ```
 
-# When were most of the tweets posted?
-International Women's Day 2018 took place on March 8th, 2018. I'm assuming that most tweets came out on that day, but I do know that some were tweeted one day before and one day after (accounting for time zone differences, I guess). Also, some of the replies were still made a few days after.
-
-```{r}
-tweets <- mutate(tweets, wday = as.factor(wday(created_at, label = TRUE)))
-tweets <- mutate(tweets, hour = as.factor(hour(created_at)))
-tweets <- mutate(tweets, week = week(created_at))
-tweets <- mutate(tweets, day = as.Date(created_at))
-
-weekday_dat <- tweets %>%
-  group_by(week, wday) %>%
-  summarize(n = n(), created_at = created_at[1]) 
-
-arrange(weekday_dat, created_at) %>%
-  head() %>%
-  knitr::kable()
+```{r echo = FALSE}
+load("tweets.rda")
 ```
 
-Unsurprisingly, most tweets were posted on International Women's Day!
-
-# Which R-Lady's profile was favorited the most?
+Now, we can explore geographic locations of all tweets and replies:
 ```{r}
-# code here
+tweets %>%
+  subset(!is.na(country)) %>%
+  janitor::tabyl(country) %>%
+  arrange(desc(country))
+```
+It looks like Uruguay`r emo::ji("Uruguay")` is ahead for a big margin! Does this mean that somebody in Uruguay`r emo::ji("Uruguay")` has won the game? Perhaps [Daniela Vásquez](https://twitter.com/d4tagirl) or [Natalia da Silva](https://twitter.com/pacocuak)???
+
+It looks like not everybody has their location services on, though. After all, only `r round(sum(!is.na(tweets$country))/nrow(tweets), 2) * 100`% of tweets mention their location. 
+
+Let's try to find out who did in fact win the game! 
+
+## Who won the game?
+In order to know who won the game, let's take a look at all replies, by `user_id`:
+```{r}
+tweets %>% 
+  janitor::tabyl(user_id) %>%
+  arrange(desc(n)) %>%
+  head(10)
 ```
 
+So, the first place with `user_id = "957247055898046464"` is clearly the @[rladies_iwd2018](http://www.twitter/rladies_iwd2018) account because there are `r nrow(rladies_tweets)`. The second place is interesting, because it has 166 replies. I've used a `user_id` to twitter handle [converter](https://tweeterid.com/) to find out who is this person. 
 
-# Which R-Lady's profile was retweeted the most?
+And the winner is `r emo::ji("drum")`:
+
+![The winner of the R-Ladies IWD2018 game is @_lacion_](images/winning_handle.png)
+
+The winner of the game is [Laura Acion](https://twitter.com/_lacion_), with 166 replies!!!
+
+## Conclusions
+With this analysis I've learned that:
+
+* The majority of tweets happened on 08.03.2018 - exactly as planned for iwd2018
+* People tend to favorite tweets, but not necessarily to retweet (correlation ~50%)
+* The majority of the tweets come from Uruguay`r emo::ji("Uruguay")` (but there are a lot of missing locations)
+* [Laura Acion](https://twitter.com/_lacion_) won the game!
+
+
+#### P.S. How does the largest chain of tweets and replies look like?
+I will try to recreate [Lucy D'Agostino McGowan's](https://twitter.com/LucyStats) analysis for twitter trees, using the tweet that got the highest number of replies. This tweet is by [Laura Acion](https://twitter.com/_lacion_):
+
+[![Tweet referencing @_lacion_, which got 7 responses, and on which the following tree is based](images/tweet_0.png)](https://twitter.com/rladies_iwd2018/status/971560433835565057)
+
 ```{r}
-table(rladies_tweets$retweet_count)
+# Grab the tweets
+id <- "971560433835565057"
+diff <- 1
+while (diff != 0) {
+  id_next <- tweets %>%
+    filter(reply_to_status_id %in% id) %>%
+    pull(status_id)
+  id_new <- unique(c(id, id_next))
+  diff <- length(id_new) - length(id)
+  id <- id_new
+}
+
+all_replies <- tweets %>% 
+  filter(reply_to_status_id %in% id)
+
+# Pull the replyee and replier text
+from_text <- all_replies %>%
+  select(reply_to_status_id) %>%
+  left_join(all_replies, c("reply_to_status_id" = "status_id")) %>%
+  select(screen_name, text)
+
+to_text <- paste0(all_replies$screen_name, ": ", all_replies$text)
+to_text <- gsub("'", "`", to_text)
+from_text <- paste0(from_text$screen_name, ": ", from_text$text)
+from_text <- gsub("'", "`", from_text)
+
+# Set the text for tweet_0.
+tweet_0 <- tweets$text[tweets$status_id == "971560433835565057"]
+
+# Create the edges
+edges <- tibble::tibble(
+  from = from_text,
+  to = to_text
+) %>%
+  mutate(from = ifelse(
+    from == "NA: NA",
+    tweet_0,
+    from)
+  )
+
+# Create the graph
+graph <- graph_from_data_frame(edges, directed = TRUE)
+V(graph)$tooltip <- V(graph)$name
+
+set.seed(8318)
+p <- ggraph(graph, layout = "nicely") + 
+  geom_edge_link() + 
+  geom_point_interactive(aes(x, y, color = "red", alpha = 0.05, tooltip = tooltip)) +
+  theme_void() + 
+  theme(legend.position = "none")
+ggiraph(code = print(p),
+        width_svg = 10,
+        zoom_max = 4)
 ```
-
-Mmmm, it looks like most tweets were retweeted only once. There
-
-
-# Overall, how popular were the rladies_iwd2018 tweets?
-
-
-
-# What's the proportion of favorites, out of the total of tweets posted?
-
-
-
-# What's the proportion of retweets, out of the total of tweets posted?
-
-
-
-# Is there any correlation between favorites and retweets?
-
-
-
-# What's the location of the majority of tweets?
-
-
-
-# Who won the game?
-
-
-
-# How does the largest chain of tweets and replies look like?
-
 
 
 

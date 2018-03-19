@@ -30,7 +30,30 @@ head(rladies_tweets[,"created_at"])
 
 names(rladies_tweets)
 
-table(rladies_tweets$retweet_count)
+# favorites
+janitor::tabyl(rladies_tweets$favorite_count)
+
+rladies_tweets %>%
+  subset(favorite_count > 30) %>%
+  select(status_id, favorite_count, text) %>%
+  arrange(desc(favorite_count))
+
+twitter_handles_fav <- c("@ledell", "@ma_salmon", "@minebocek", 
+                         "@JennyBryan", "@juliasilge", "@gdequeiroz", 
+                         "@AmeliaMN", "@Zofiathewitch", "@lornamariak")
+
+rladies_tweets %>%
+  subset(favorite_count > 30 & status_id != "971152051991384065") %>%
+  select(status_id, favorite_count, text) %>%
+  arrange(desc(favorite_count)) %>%
+  cbind(twitter_handles_fav, .)
+
+# retweets
+rladies_tweets %>%
+  janitor::tabyl(retweet_count) %>%
+  arrange(desc(retweet_count))
+
+max(rladies_tweets$retweet_count)
 
 which(rladies_tweets$retweet_count==26)
 # [1] 3 first tweet
@@ -115,9 +138,27 @@ tweets$text[1] == rladies_tweets$text[1]
 # max(table(tweets_subset$reply_to_status_id))
 # which(table(tweets_subset$reply_to_status_id) > 6)
 
+
+# table(tweets_subset$reply_to_status_id)
+
+tweets %>% 
+  janitor::tabyl(reply_to_status_id) %>%
+  arrange(desc(n)) %>%
+  head(10)
+
+names(tweets)
+
+tweets %>% 
+  janitor::tabyl(user_id) %>%
+  arrange(desc(n)) %>%
+  head(10)
+
+as_screenname("957247055898046464")
+            
+
 max(table(tweets$reply_to_status_id))
 which(table(tweets$reply_to_status_id) > 6)
-indexes <- which(
+  indexes <- which(
   tweets_subset$reply_to_status_id == "971560433835565057")
 
 indexes <- which(
@@ -131,7 +172,9 @@ cbind(tweets$status_id[indexes],
 tweets$status_id[indexes][1]
 
 # Grab the tweets
-id <- tweets$status_id[indexes][1]
+# id <- tweets$status_id[indexes][1]
+
+id <- "971560433835565057"
 diff <- 1
 while (diff != 0) {
   id_next <- tweets %>%
@@ -194,7 +237,7 @@ edges <- tibble::tibble(
 graph <- graph_from_data_frame(edges, directed = TRUE)
 V(graph)$tooltip <- V(graph)$name
 
-set.seed(525)
+set.seed(8318)
 p <- ggraph(graph, layout = "nicely") + 
   geom_edge_link() + 
   geom_point_interactive(aes(x, y, color = "red", alpha = 0.05, tooltip = tooltip)) +
@@ -208,6 +251,25 @@ ggiraph(code = print(p),
 # Maelle's
 
 # When were tweets posted?
+# rladies tweets
+wday = as.factor(wday(created_at, 
+                      label = TRUE))
+rladies_tweets <- mutate(rladies_tweets, 
+                         hour = as.factor(hour(created_at)))
+rladies_tweets <- mutate(rladies_tweets, 
+                         week = week(created_at))
+rladies_tweets <- mutate(rladies_tweets, 
+                         day = as.Date(created_at))
+
+weekday_dat <- rladies_tweets %>%
+  group_by(week, wday) %>%
+  summarize(n = n(), created_at = created_at[1]) 
+
+arrange(weekday_dat, created_at) %>%
+  head() %>%
+  knitr::kable()
+
+# all tweets
 tweets <- mutate(tweets, wday = as.factor(wday(created_at, label = TRUE)))
 tweets <- mutate(tweets, hour = as.factor(hour(created_at)))
 tweets <- mutate(tweets, week = week(created_at))
@@ -280,13 +342,20 @@ as.data.frame(rladies_tweets[index,c("country", "screen_name")])
 
 
 ## tweets
-index <- which(!is.na(tweets$country))
-table(tweets$country[index])
+index_country <- which(!is.na(tweets$country))
+
+tweets %>%
+  subset(!is.na(country)) %>%
+  janitor::tabyl(country) %>%
+  arrange(desc(country))
+
+table(tweets$country[index_country])
 
 as.data.frame(tweets[index,c("country", "screen_name")])
 # Uruguay and Dani are winning here
 # make map of this?
 
+round(sum(!is.na(tweets$country))/nrow(tweets), 2)
 
 # who won the game?
 all_replies %>%
