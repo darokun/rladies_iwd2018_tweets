@@ -5,9 +5,17 @@ date: '`r format(Sys.Date(), "%B %d, %Y")`'
 output: html_document
 ---
 
-[R-Ladies](http://rladies.org/) is a global organization that promotes diversity in the R community. One way to do this is by raising the visibility of women* in tech, especially those who are R users, or developers.
+[R-Ladies](http://rladies.org/) is a global organization that promotes diversity in the R community. One way to do this is by raising the visibility of women and other underrepresented genders^1^ in tech, especially those who are R users, or developers.
 
-The R-Ladies Global Team* instigated a unique initiative to increase female visibility in tech, as part of the 2018 International Women's Day celebration. They created a twitter account (@[rladies_iwd2018](http://www.twitter/rladies_iwd2018)) to post - tweet by tweet- each profile of R-Ladies listed in the [R-Ladies Global Directory](https://rladies.org/directory/). For details on how they set up this initiative, check out [this]() blog post.
+-----
+
+^1^ (cis/trans women, trans men, non-binary, genderqueer, agender, or other).
+
+-----
+
+
+
+The R-Ladies Global Team instigated a unique initiative to increase female visibility in tech, as part of the 2018 International Women's Day celebration. They created a twitter account (@[rladies_iwd2018](http://www.twitter/rladies_iwd2018)) to post - tweet by tweet- each profile of R-Ladies listed in the [R-Ladies Global Directory](https://rladies.org/directory/). For details on how they set up this initiative, check out [this]() blog post.
 
 Encouraged by the R-Ladies Global Team, but also out of simple curiosity, I decided to analyze these tweets and their interactions, using [Mike Kearney's](https://twitter.com/kearneymw) super useful [rtweet](https://github.com/mkearney/rtweet) package.
 
@@ -23,13 +31,13 @@ Apart from the initiative itself, the R-Ladies Global Team also created a game, 
 
 ## Resources
 I used several resources for my analysis, including:
-<!--- Abi: it would be nice to expand on this a bit more eg reference the authors and explain what you used from each of these blogs?--->
-* [How to create a Twitter App](http://rtweet.info/articles/auth.html)
-* [The `rtweet` package](http://rtweet.info/index.html)
-* [Mike Kearney's slides about `rtweet`](https://mkearney.github.io/nicar_tworkshop/#1)
-* [Lucy's blog post: Twitter tress](http://livefreeordichotomize.com/2017/07/24/twitter-trees/)
-* [Maëlle's blog post: "Names of b.....s badder than Taylor Swift, a class in women's studies?"](http://www.masalmon.eu/2017/12/05/badderb/)
-* [Maëlle's blog post: "A glance at R-bloggers Twitter feed"](http://www.masalmon.eu/2017/02/28/rbloggerstweets/)
+
+* [How to create a Twitter App](http://rtweet.info/articles/auth.html): I used this article to set up a twitter app that could interact with the Twitter API using the `rtweet` package.
+* [The `rtweet` package](http://rtweet.info/index.html): I used this webpage to understand the Twitter API, as per `rtweet`.
+* [Mike Kearney's slides about `rtweet`](https://mkearney.github.io/nicar_tworkshop/#1): I used these slides as reference for the `search_tweets()` function.
+* [Maëlle's blog post: "Names of b.....s badder than Taylor Swift, a class in women's studies?"](http://www.masalmon.eu/2017/12/05/badderb/): Another reference for `search_tweets()`.
+* [Maëlle's blog post: "A glance at R-bloggers Twitter feed"](http://www.masalmon.eu/2017/02/28/rbloggerstweets/): With this blog post, I learned how to explore the time at which tweets were posted, as well as some exploration about favorites and retweets.
+* [Lucy's blog post: Twitter tress](http://livefreeordichotomize.com/2017/07/24/twitter-trees/): The last bits of this blog post (about the replies tree) are based on this blog post.
 
 ## Questions
 I had several questions at the beginning of this analysis:
