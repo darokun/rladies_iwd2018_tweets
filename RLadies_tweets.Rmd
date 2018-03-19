@@ -5,27 +5,25 @@ date: '`r format(Sys.Date(), "%B %d, %Y")`'
 output: html_document
 ---
 
-[R-Ladies](http://rladies.org/) is a global organization to promote diversity in the R community. One of the ways of promoting diversity is by increasing the visibility of women and other underrepresented genders* in tech, especially those who are R users, or developers.
+[R-Ladies](http://rladies.org/) is a global organization that promotes diversity in the R community. One way to do this is by raising the visibility of women* in tech, especially those who are R users, or developers.
 
-* (cis/trans women, trans men, non-binary, genderqueer, agender, or other). 
+The R-Ladies Global Team* instigated a unique initiative to increase female visibility in tech, as part of the 2018 International Women's Day celebration. They created a twitter account (@[rladies_iwd2018](http://www.twitter/rladies_iwd2018)) to post - tweet by tweet- each profile of R-Ladies listed in the [R-Ladies Global Directory](https://rladies.org/directory/). For details on how they set up this initiative, check out [this]() blog post.
 
-The R-Ladies Global Team set up a cool strategy to give more visibility to these women, as part of the 2018 International Women's Day celebration. They created a twitter account (@[rladies_iwd2018](http://www.twitter/rladies_iwd2018)) to post -tweet by tweet- each profile of R-Ladies present in the [R-Ladies Global Directory](https://rladies.org/directory/). For details on how they set up this initiative, check out [this]() blog post.
-
-Partially encouraged by the R-Ladies Global Team, and partially out of plain curiosity, I decided to analyze these tweets and their interactions, using [Mike Kearney's](https://twitter.com/kearneymw) super useful [rtweet](https://github.com/mkearney/rtweet) package.
+Encouraged by the R-Ladies Global Team, but also out of simple curiosity, I decided to analyze these tweets and their interactions, using [Mike Kearney's](https://twitter.com/kearneymw) super useful [rtweet](https://github.com/mkearney/rtweet) package.
 
 ## Warnings
-**WARNING 1**: The `rtweet` package interacts with Twitter's API, which has time limit of 7 days for doing it for free. If you would like to perform Twitter analyses after one week of tweets being created, you may have to [pay for this service](https://developer.twitter.com/en/pricing). The exception is when you want to fetch all tweets from the whole timeline using `get_timeline`, but depending on which account you'd wish to analyze, the amount of tweets you receive can be overwhelming, so use at your own risk! It works for @[rladies_iwd2018](http://www.twitter/rladies_iwd2018) because the account has relatively few tweets (n = 442 at the time of this analysis).
+**WARNING 1**: The `rtweet` package interacts with Twitter's API, which has a time limit of 7 days of doing it for free. If you would like to perform Twitter analyses after one week of tweets being created, you may have to [pay for this service](https://developer.twitter.com/en/pricing). The exception is when fetching all tweets from a whole timeline using `get_timeline`, but depending on which account one is analyzing, the amount of tweets received could be overwhelming, so use at your own risk! It works for @[rladies_iwd2018](http://www.twitter/rladies_iwd2018) because the account has relatively few tweets (n = 442 at the time of this analysis).
 
 **WARNING 2**: The Twitter API changes frequently. Therefore, the variable names I used for this analysis might change in the future. There should be similar variables being included in the API at any time, though. So if you want to use this code, make sure that you have up-to-date Twitter API variable names, and change anything if needed.
 
 ## The game
-Apart from the initiative itself, the R-Ladies Global Team also thought of creating a game, where anybody could reply to each tweet with the Twitter handle of the featured R-Lady. The person making the largest amount of replies wins the game!
+Apart from the initiative itself, the R-Ladies Global Team also created a game, where anybody could reply to each tweet with the Twitter handle of the featured R-Lady. The person with the largest amount of replies wins the game!
 
 [![R-Ladies Game](images/rladies_twitter.png)](https://twitter.com/rladies_iwd2018/status/971453057178402817)
 
 ## Resources
 I used several resources for my analysis, including:
-
+<!--- Abi: it would be nice to expand on this a bit more eg reference the authors and explain what you used from each of these blogs?--->
 * [How to create a Twitter App](http://rtweet.info/articles/auth.html)
 * [The `rtweet` package](http://rtweet.info/index.html)
 * [Mike Kearney's slides about `rtweet`](https://mkearney.github.io/nicar_tworkshop/#1)
@@ -42,7 +40,7 @@ I had several questions at the beginning of this analysis:
 * Is there any correlation between favorites and retweets?
 * What's the location of the majority of tweets?
 * Who won the game?
-* How does the largest chain of tweets and replies look like?
+* What does the largest chain of tweets and replies look like?
 
 ## Load packages
 ```{r message = FALSE, warning = FALSE} 
@@ -64,7 +62,7 @@ rladies_tweets <- get_timeline("rladies_iwd2018", n = 500)
 ```
 
 ## When were most of the tweets posted?
-International Women's Day 2018 took place on March 8th, 2018. I'm assuming that most tweets came out on that day, but I do know that some were tweeted one day before and one day after (accounting for time zone differences, I guess). Also, some of the replies were still made a few days later.
+International Women's Day 2018 took place on March 8th, 2018. I'm assuming that most tweets came out on that day, but I do know that some were tweeted one day before and one day after (likely accounting for time zone differences). Also, some of the replies were still being made a few days later.
 
 ```{r}
 rladies_tweets <- mutate(rladies_tweets, 
@@ -221,10 +219,9 @@ With this analysis I've learned that:
 
 * The majority of tweets happened on 08.03.2018 - exactly as planned for iwd2018
 * People tend to favorite tweets, but not necessarily to retweet (correlation ~50%)
-* The majority of the tweets (with location services on) come from Uruguay`r emo::ji("Uruguay")` (but there are a lot of missing locations)
+* The majority of the tweets come from Uruguay`r emo::ji("Uruguay")` (but there are a lot of missing locations)
 * [Laura Acion](https://twitter.com/_lacion_) won the game!
 
------
 
 #### P.S. How does the largest chain of tweets and replies look like?
 I will try to recreate [Lucy D'Agostino McGowan's](https://twitter.com/LucyStats) analysis for twitter trees, using the tweet that got the highest number of replies. This tweet is by [Laura Acion](https://twitter.com/_lacion_):
