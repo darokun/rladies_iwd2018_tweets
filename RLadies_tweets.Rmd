@@ -1,0 +1,154 @@
+---
+title: "R-Ladies IWD2018 tweets analysis, using the rtweet package"
+author: "Daloha Rodriguez-Molina, the R-Ladies Global team"
+date: '`r format(Sys.Date(), "%B %d, %Y")`'
+output: html_document
+---
+
+[R-Ladies](http://rladies.org/) is a global organization to promote diversity in the R community. One of the ways of promoting diversity is by increasing the visibility of women* in tech, especially those who are R users, or developers.
+
+The R-Ladies Global Team* set up a cool strategy to give more visibility to these women, as part of the 2018 International Women's Day celebration. They created a twitter account (@[rladies_iwd2018](http://www.twitter/rladies_iwd2018)) to post, tweet by tweet, the profile of an R-Lady present in the [R-Ladies Global Directory](https://rladies.org/directory/). For details on how they set up this initiative, check out [this]() blog post.
+
+Partially encouraged by the R-Ladies Global Team, and partially out of plain curiosity, I decided to analyze these tweets and their interactions, using [Mike Kearney's](https://twitter.com/kearneymw) super useful [rtweet](https://github.com/mkearney/rtweet) package.
+
+# Warnings
+**WARNING 1**: The `rtweet` package interacts with Twitter's API, which has time limit of 7 days for doing it for free. If you would like to perform Twitter analyses after one week of tweets being created, you may have to [pay for this service](https://developer.twitter.com/en/pricing). The exception is when you want to fetch all tweets from the whole timeline using `get_timeline`, but depending on which account you'd wish to analyze, the amounts of tweets you receive can be overwhelming. It works for @[rladies_iwd2018](http://www.twitter/rladies_iwd2018) because the account has relatively few tweets (n = 442 at the time of this analysis).
+
+**WARNING 2**: The Twitter API changes frequently. Therefore, the variables I used for this analysis might change their name in the future. There should be similar variables being included in the API at any time, though. So if you want to use this code, make sure that you have up-to-date Twitter API variable names, and change anything if needed.
+
+# The game
+Apart from the initiative itself, the R-Ladies Global Team also thought of creating a game, where anybody could reply to each tweet with the Twitter handle of the featured R-Lady. The person making the largest amount of replies wins the game!
+
+![]()
+
+# Resources
+I used several resources for my analysis, including:
+* how to set up a twitter app
+* The `rtweet` book
+* Mike Kearney's blog post / slides
+* Lucy's blog post
+* Maëlle's blog post 1
+* Maëlle's blog post 2
+
+# Questions
+I had several questions at the beginning of this analysis:
+
+* When were most of the tweets posted?
+* Which R-Lady's profile was favorited the most?
+* Which R-Lady's profile was retweeted the most?
+* Overall, how popular were the rladies_iwd2018 tweets?
+* What's the proportion of favorites, out of the total of tweets posted?
+* What's the proportion of retweets, out of the total of tweets posted?
+* Is there any correlation between favorites and retweets?
+* What's the location of the majority of tweets?
+* Who won the game?
+* How does the largest chain of tweets and replies look like?
+
+# Load packages
+```{r} 
+library("rtweet")
+library("gridExtra")
+library("dplyr")
+library("lubridate")
+library("ggplot2")
+```
+
+# Get timeline and tweets
+At the time of this analysis, the @[rladies_iwd2018](http://www.twitter/rladies_iwd2018) twitter account has fewer than 500 tweets, so we can import all tweets by doing this:
+
+```{r}
+rladies_tweets <- get_timeline("rladies_iwd2018", n = 500)
+# rladies_tweets <- arrange(rladies_tweets, created_at)
+```
+
+However, the function `get_timeline` only accesses the tweets posted by the @[rladies_iwd2018](http://www.twitter/rladies_iwd2018) account. In order to see all tweets related to the account, including mentions, replies, etc., we need to use `search_tweets`.
+
+```{r}
+# find url of first tweet
+tweet_url <- "https://twitter.com/rladies_iwd2018/status/971140001495908353"
+id <- gsub(".*status/", "", tweet_url)
+
+tweets <- search_tweets(
+  q = "@rladies_iwd2018 OR to:rladies_iwd2018 OR rladies_iwd2018",
+  sinceId = id, n = 2000, include_rts = FALSE)
+
+tweets <- tweets %>%
+  distinct()
+
+tweets <- arrange(tweets, desc(created_at))
+```
+
+# When were most of the tweets posted?
+International Women's Day 2018 took place on March 8th, 2018. I'm assuming that most tweets came out on that day, but I do know that some were tweeted one day before and one day after (accounting for time zone differences, I guess). Also, some of the replies were still made a few days after.
+
+```{r}
+tweets <- mutate(tweets, wday = as.factor(wday(created_at, label = TRUE)))
+tweets <- mutate(tweets, hour = as.factor(hour(created_at)))
+tweets <- mutate(tweets, week = week(created_at))
+tweets <- mutate(tweets, day = as.Date(created_at))
+
+weekday_dat <- tweets %>%
+  group_by(week, wday) %>%
+  summarize(n = n(), created_at = created_at[1]) 
+
+arrange(weekday_dat, created_at) %>%
+  head() %>%
+  knitr::kable()
+```
+
+Unsurprisingly, most tweets were posted on International Women's Day!
+
+# Which R-Lady's profile was favorited the most?
+```{r}
+# code here
+```
+
+
+# Which R-Lady's profile was retweeted the most?
+```{r}
+table(rladies_tweets$retweet_count)
+```
+
+Mmmm, it looks like most tweets were retweeted only once. There
+
+
+# Overall, how popular were the rladies_iwd2018 tweets?
+
+
+
+# What's the proportion of favorites, out of the total of tweets posted?
+
+
+
+# What's the proportion of retweets, out of the total of tweets posted?
+
+
+
+# Is there any correlation between favorites and retweets?
+
+
+
+# What's the location of the majority of tweets?
+
+
+
+# Who won the game?
+
+
+
+# How does the largest chain of tweets and replies look like?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
