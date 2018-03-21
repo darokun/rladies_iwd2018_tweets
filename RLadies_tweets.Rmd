@@ -20,7 +20,7 @@ The R-Ladies Global Team instigated a unique initiative to increase female visib
 Encouraged by the R-Ladies Global Team, but also out of simple curiosity, I decided to analyze these tweets and their interactions, using [Mike Kearney's](https://twitter.com/kearneymw) super useful [rtweet](https://github.com/mkearney/rtweet) package.
 
 ## Warnings
-**WARNING 1**: The `rtweet` package interacts with Twitter's API, which has a time limit of 7 days of doing it for free. If you would like to perform Twitter analyses after one week of tweets being created, you may have to [pay for this service](https://developer.twitter.com/en/pricing). The exception is when fetching all tweets from a whole timeline using `get_timeline`, but depending on which account one is analyzing, the amount of tweets received could be overwhelming, so use at your own risk! It works for @[rladies_iwd2018](http://www.twitter/rladies_iwd2018) because the account has relatively few tweets (n = 442 at the time of this analysis).
+**WARNING 1**: The `rtweet` package interacts with Twitter's API, which has a time limit of 7 days of doing it for free. If you would like to perform Twitter analyses after one week of tweets being created, you may have to [pay for this service](https://developer.twitter.com/en/pricing). The exception is when using `get_timeline`, but there is still a limit on the number of tweets you can fetch. It works for @[rladies_iwd2018](http://www.twitter/rladies_iwd2018) because the account has relatively few tweets (n = 442 at the time of this analysis).
 
 **WARNING 2**: The Twitter API changes frequently. Therefore, the variable names I used for this analysis might change in the future. There should be similar variables being included in the API at any time, though. So if you want to use this code, make sure that you have up-to-date Twitter API variable names, and change anything if needed.
 
@@ -43,8 +43,6 @@ I used several resources for my analysis, including:
 I had several questions at the beginning of this analysis:
 
 * When were most of the tweets posted?
-* Which R-Lady's profile was favorited the most?
-* Which R-Lady's profile was retweeted the most?
 * Is there any correlation between favorites and retweets?
 * What's the location of the majority of tweets?
 * Who won the game?
@@ -70,7 +68,7 @@ rladies_tweets <- get_timeline("rladies_iwd2018", n = 500)
 ```
 
 ## When were most of the tweets posted?
-International Women's Day 2018 took place on March 8th, 2018. I'm assuming that most tweets came out on that day, but I do know that some were tweeted one day before and one day after (likely accounting for time zone differences). Also, some of the replies were still being made a few days later.
+International Women's Day 2018 took place on March 8th, 2018. I'm assuming that most tweets came out on that day, but let's check. Also, some of the replies were still being made a few days later.
 
 ```{r}
 rladies_tweets <- mutate(rladies_tweets, 
@@ -92,59 +90,9 @@ arrange(weekday_dat, created_at) %>%
   knitr::kable()
 ```
 
-Unsurprisingly, most tweets were posted on International Women's Day!
+Unsurprisingly, most tweets were posted on International Women's Day! 
 
-## Which profile was favorited the most?
-```{r}
-rladies_tweets %>%
-  janitor::tabyl(favorite_count) %>%
-  arrange(desc(favorite_count)) %>%
-  head(10)
-```
-Wow! there are some tweets that have been favorited more than 40 times!
-
-I'll check those who have more than 30 favorites:
-```{r}
-rladies_tweets %>%
-  subset(favorite_count > 30) %>%
-  select(status_id, favorite_count, text) %>%
-  arrange(desc(favorite_count))
-```
-Okay, the first tweet (`status_id = "971152051991384065"`) doesn't count because it doesn't feature any R-Lady, but from then and on we have:
-
-```{r}
-# Adding twitter handles by hand because not all tweets contain handles.
-twitter_handles_fav <- c("@ledell", "@ma_salmon", "@minebocek", 
-                         "@JennyBryan", "@juliasilge", "@gdequeiroz", 
-                         "@AmeliaMN", "@Zofiathewitch", "@lornamariak")
-
-rladies_tweets %>%
-  subset(favorite_count > 30 & status_id != "971152051991384065") %>%
-  select(status_id, favorite_count) %>%
-  arrange(desc(favorite_count)) %>%
-  cbind(twitter_handles_fav, .)
-```
-It looks like there's a tie! [Erin LeDell](https://twitter.com/ledell) and [Maëlle Salmon](https://twitter.com/ma_salmon) each received 46 favorites!
-
-Runner ups are [Mine Cetinkaya-Rundel](https://twitter.com/minebocek), [Jenny Bryan](https://twitter.com/JennyBryan),  [Julia Silge](https://twitter.com/juliasilge), R-Ladies founder [Gabriela de Queiroz](https://twitter.com/gdequeiroz), [Amelia McNamara](https://twitter.com/AmeliaMN), [Hazel Kavili](https://twitter.com/Zofiathewitch) and [Lorna Maria Aine](https://twitter.com/lornamariak)!
-
-## Which profile was retweeted the most?
-```{r}
-rladies_tweets %>%
-  janitor::tabyl(retweet_count) %>%
-  arrange(desc(retweet_count))
-```
-
-Mmmm, it looks like most tweets were not retweeted (n = `r min(rladies_tweets$retweet_count)`), and the maximum number of retweets for a single tweet is `r max(rladies_tweets$retweet_count)`.
-
-Let's find out which tweets were retweeted more than ten times!
-```{r}
-rladies_tweets %>%
-  subset(retweet_count > 10) %>%
-  select(status_id, retweet_count, text) %>%
-  arrange(desc(retweet_count))
-```
-So, the first and second tweets don't count because they don't feature any R-Lady, but we see [Maelle's]() profile again with `r rladies_tweets$retweet_count[rladies_tweets$status_id == "971357634535284738"]` retweets!
+In fact, all tweets were sent on International Women's Day 2018, but accounting for different time zones, we get the impression that there were also some tweets posted one day before and one day after.
 
 ## Is there any correlation between favorites and retweets?
 I took a look at the proportion of favorites and the proportion of retweets, and they are quite dissimilar:
@@ -199,7 +147,7 @@ tweets %>%
   janitor::tabyl(country) %>%
   arrange(desc(country))
 ```
-It looks like Uruguay`r emo::ji("Uruguay")` is ahead for a big margin! Does this mean that somebody in Uruguay`r emo::ji("Uruguay")` has won the game? Perhaps [Daniela Vásquez](https://twitter.com/d4tagirl) or [Natalia da Silva](https://twitter.com/pacocuak)???
+It looks like Uruguay`r emo::ji("Uruguay")` is ahead for a big margin! Does this mean that somebody in Uruguay`r emo::ji("Uruguay")` has won the game?
 
 It looks like not everybody has their location services on, though. After all, only `r round(sum(!is.na(tweets$country))/nrow(tweets), 2) * 100`% of tweets mention their location. 
 
@@ -214,18 +162,36 @@ tweets %>%
   head(10)
 ```
 
-So, the first place with `user_id = "957247055898046464"` is clearly the @[rladies_iwd2018](http://www.twitter/rladies_iwd2018) account because there are `r nrow(rladies_tweets)`. The second place is interesting, because it has 166 replies. I've used a `user_id` to twitter handle [converter](https://tweeterid.com/) to find out who is this person. 
+So, the first place with `user_id = "957247055898046464"` is clearly the @[rladies_iwd2018](http://www.twitter/rladies_iwd2018) account because there are `r nrow(rladies_tweets)`. Let's check:
 
-And the winner is `r emo::ji("drum")`:
+```{r}
+tweets %>% 
+  janitor::tabyl(user_id) %>%
+  arrange(desc(n)) %>%
+  filter(n == 442) %>%
+  lookup_users()
+```
 
-![The winner of the R-Ladies IWD2018 game is @_lacion_](images/winning_handle.png)
+Indeed, that is the @[rladies_iwd2018](http://www.twitter/rladies_iwd2018) account.
+
+The second place is interesting, because it has 166 replies, which is a huge difference in comparison to the third place! Let's find out who is this person!
+
+And the winner is `r emo::ji("drum")``r emo::ji("drum")``r emo::ji("drum")`:
+
+```{r}
+tweets %>% 
+  janitor::tabyl(user_id) %>%
+  arrange(desc(n)) %>%
+  filter(n == 166) %>%
+  lookup_users()
+```
 
 The winner of the game is [Laura Acion](https://twitter.com/_lacion_), with 166 replies!!!
 
 ## Conclusions
 With this analysis I've learned that:
 
-* The majority of tweets happened on 08.03.2018 - exactly as planned for iwd2018
+* Tweets happened on 08.03.2018 - exactly as planned for iwd2018
 * People tend to favorite tweets, but not necessarily to retweet (correlation ~50%)
 * The majority of the tweets come from Uruguay`r emo::ji("Uruguay")` (but there are a lot of missing locations)
 * [Laura Acion](https://twitter.com/_lacion_) won the game!
@@ -291,17 +257,3 @@ ggiraph(code = print(p),
         width_svg = 10,
         zoom_max = 4)
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
