@@ -92,7 +92,7 @@ arrange(weekday_dat, created_at) %>%
 
 Unsurprisingly, most tweets were posted on International Women's Day! 
 
-In fact, all tweets were sent on International Women's Day 2018, but accounting for different time zones, we get the impression that there were also some tweets posted one day before and one day after.
+In fact, all tweets were sent on International Women's Day 2018, but because there are different time zones around the world, we get the impression that there were some tweets posted one day before and one day after. The table shows how I experienced tweets in my time zone (GMT +1), but all these timepoints correspond to International Women's Day somewhere on Earth.
 
 ## Is there any correlation between favorites and retweets?
 I took a look at the proportion of favorites and the proportion of retweets, and they are quite dissimilar:
@@ -193,7 +193,7 @@ With this analysis I've learned that:
 
 * Tweets happened on 08.03.2018 - exactly as planned for iwd2018
 * People tend to favorite tweets, but not necessarily to retweet (correlation ~50%)
-* The majority of the tweets come from Uruguay`r emo::ji("Uruguay")` (but there are a lot of missing locations)
+* The majority of tweet replies come from Uruguay`r emo::ji("Uruguay")` (but there are a lot of missing locations)
 * [Laura Acion](https://twitter.com/_lacion_) won the game!
 
 
